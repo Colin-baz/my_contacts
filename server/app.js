@@ -1,6 +1,7 @@
 const express = require('express');
 const mongoose = require('mongoose');
 require("dotenv").config();
+import User from '/models/User.js';
 
 const app = express();
 
@@ -19,6 +20,12 @@ db.on('error', (error) => {
     console.error('erreur de connexion:', error);
 });
 
+const contact = new User({
+    email: 'test@a.com',
+    passwordHashed: '123'
+});
+
+await contact.save();
 
 app.get('/', (_req, res) => {
   res.send('Hello World');  
