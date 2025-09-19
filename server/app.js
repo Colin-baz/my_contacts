@@ -1,36 +1,24 @@
-const express = require('express');
-const mongoose = require('mongoose');
 require("dotenv").config();
-import User from '/models/User.js';
+const express = require('express');
+const connectDB = require("./config/db");
 
 const app = express();
 
-const PORT = process.env.PORT || 5000;
+app.use(express.json());
 
-const dbURL = process.env.URL_ATLAS;
+const auth = require("./routes/auth.routes");
+app.use("/auth", auth);
+const startServer = async () => {
+  await connectDB();
 
-mongoose.connect(dbURL);
-const db = mongoose.connection;
+  const PORT = process.env.PORT || 5000;
+  app.listen(PORT, () => {
+    console.log(`Server is running on port ${PORT}`);
+  });
+};
 
-db.once('open', () => {
-    console.log('Connexion réussie');
-});
-
-db.on('error', (error) => {
-    console.error('erreur de connexion:', error);
-});
-
-const contact = new User({
-    email: 'test@a.com',
-    passwordHashed: '123'
-});
-
-await contact.save();
+startServer();
 
 app.get('/', (_req, res) => {
   res.send('Hello World');  
-});
-
-app.listen(PORT, () => {
-  console.log(`Server is running on port ${PORT}`);  
 });
