@@ -6,8 +6,7 @@ const app = express();
 
 app.use(express.json());
 
-const auth = require("./routes/auth.routes");
-app.use("/auth", auth);
+
 const startServer = async () => {
   await connectDB();
 
@@ -22,3 +21,11 @@ startServer();
 app.get('/', (_req, res) => {
   res.send('Hello World');  
 });
+
+const auth = require("./routes/auth.routes");
+app.use("/auth", auth);
+
+const contacts = require("./routes/contact.routes");
+app.use("/api", contacts);
+
+
