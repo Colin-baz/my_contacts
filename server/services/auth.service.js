@@ -1,4 +1,5 @@
-const bcrypt = require("bcrypt");
+const bcrypt = require("bcryptjs");
+const jwt = require("jsonwebtoken");
 const User = require("../models/User");
 
 const registerUser = async (email, password) => {
@@ -18,4 +19,32 @@ const registerUser = async (email, password) => {
   return user;
 };
 
-module.exports = { registerUser };
+const loginUser = async (email, password) => {
+
+  const user = await User.findOne({ email });
+  if (!user) {
+    return res.status(401).json({ message: "Authentication failed" });
+  }
+
+  const isPasswordValid = await bcrypt.compare(password, user.password);
+  if (!isPasswordValid) {
+    return res.status(401).json({ message: "Authentication failed" });
+  }
+
+  const token = jwt.sign(
+    {
+      email: user.email,
+      userId: user._id,
+    },
+    process.env.JWT_SECRET,
+    { expiresIn: "1h" }
+  );
+
+  return { token, user };
+};
+
+const getUsers = async () => {
+  return await User.find().select("-password"); 
+};
+
+module.exports = { registerUser, loginUser, getUsers };
