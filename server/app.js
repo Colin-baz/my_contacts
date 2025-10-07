@@ -7,7 +7,7 @@ const cors = require("cors");
 const app = express();
 
 app.use(cors({
-  origin: "http://localhost:3001 || https://mycontactsproject.netlify.app",
+  origin: "http://localhost:3001, https://mycontactsproject.netlify.app",
   methods: ["GET", "POST", "PUT", "DELETE"],
   credentials: true 
 }));
@@ -27,7 +27,6 @@ app.use("/auth", auth);
 const contacts = require("./routes/contact.routes");
 app.use("/api", contacts);
 
-// Error handling middleware
 app.use((err, req, res, next) => {
   const statusCode = err.statusCode || 500;
   res.status(statusCode).json({
