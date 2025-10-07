@@ -7,7 +7,7 @@ const Login = () => {
     email: "",
     password: ""
   });
-
+  const [error, setError] = useState("");
   const navigate = useNavigate();
 
   const handleChange = (e) => {
@@ -19,26 +19,41 @@ const Login = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setError("");
 
-    const res = await fetch("http://localhost:5000/auth/login", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(formData)
-    });
+    try {
+      const res = await fetch("http://localhost:5000/auth/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(formData)
+      });
 
-    const data = await res.json();
+      const data = await res.json();
 
-    localStorage.setItem("token", data.token);
-    navigate("/");
+      if (!res.ok) {
+        setError(data.message || "Erreur de connexion");
+        return;
+      }
+
+      if (data.accessToken) {
+        localStorage.setItem("token", data.accessToken);
+        navigate("/contacts");
+      } else {
+        setError("Aucun token reçu du serveur");
+      }
+    } catch (err) {
+      setError("Erreur de connexion au serveur");
+    }
   };
 
   return (
-    <div>
+    <div className="container">
       <h2>Connexion</h2>
+      {error && <div className="error-message">{error}</div>}
       <form onSubmit={handleSubmit}>
-        <input type="email" name="email" placeholder="Email" onChange={handleChange} required />
-        <input type="password" name="password" placeholder="Mot de passe" onChange={handleChange} required />
-        <button type="submit">Se connecter</button>
+        <input type="email" name="email" placeholder="Email" onChange={handleChange} value={formData.email} required/>
+        <input type="password" name="password" placeholder="Mot de passe" onChange={handleChange}value={formData.password} required/>
+        <button type="submit"> Se connecter </button>
       </form>
     </div>
   );
