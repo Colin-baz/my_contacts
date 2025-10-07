@@ -6,7 +6,7 @@ const Register = () => {
     email: "",
     password: ""
   });
-
+  const [error, setError] = useState("");
   const navigate = useNavigate();
 
   const handleChange = (e) => {
@@ -18,23 +18,35 @@ const Register = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setError("");
 
-    await fetch("http://localhost:5000/auth/register", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(formData)
-    });
+    try {
+      const res = await fetch("http://localhost:5000/auth/register", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(formData)
+      });
 
-    navigate("/login");
+      const data = await res.json();
+
+      if (!res.ok) {
+        setError(data.message || "Erreur lors de l'inscription");
+        return;
+      }
+
+      navigate("/login");
+    } catch (err) {
+      setError("Erreur de connexion au serveur");
+    }
   };
 
   return (
-    <div>
+    <div className="container">
       <h2>Inscription</h2>
       <form onSubmit={handleSubmit}>
-        <input type="email" name="email" placeholder="Email" onChange={handleChange} required />
-        <input type="password" name="password" placeholder="Mot de passe" onChange={handleChange} required />
-        <button type="submit">S'inscrire</button>
+        <input type="email" name="email" placeholder="Email" onChange={handleChange} value={formData.email} required />
+        <input type="password" name="password" placeholder="Mot de passe" onChange={handleChange} value={formData.password} required/>
+        <button type="submit"> S'inscrire</button>
       </form>
     </div>
   );
