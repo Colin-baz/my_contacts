@@ -27,16 +27,14 @@ app.use("/auth", auth);
 const contacts = require("./routes/contact.routes");
 app.use("/api", contacts);
 
-const startServer = async () => {
-  await connectDB();
-
-  const PORT = process.env.PORT || 5000;
-  app.listen(PORT, () => {
-    console.log(`Server is running on port ${PORT}`);
+// Error handling middleware
+app.use((err, req, res, next) => {
+  const statusCode = err.statusCode || 500;
+  res.status(statusCode).json({
+    success: false,
+    message: err.message || "Internal Server Error",
+    ...(process.env.NODE_ENV === 'development' && { stack: err.stack })
   });
-};
+});
 
-startServer();
-
-
-
+module.exports = app;

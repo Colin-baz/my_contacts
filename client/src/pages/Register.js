@@ -21,7 +21,7 @@ const Register = () => {
     setError("");
 
     try {
-      const res = await fetch("http://localhost:5000/auth/register", {
+      const res = await fetch(`${process.env.REACT_APP_API_URL}/auth/register`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(formData)
@@ -44,6 +44,7 @@ const Register = () => {
     <div className="container">
       <h2>Inscription</h2>
       <form onSubmit={handleSubmit}>
+        {error && <div className="error-message">{error}</div>}
         <input type="email" name="email" placeholder="Email" onChange={handleChange} value={formData.email} required />
         <input type="password" name="password" placeholder="Mot de passe" onChange={handleChange} value={formData.password} required/>
         <button type="submit"> S'inscrire</button>
