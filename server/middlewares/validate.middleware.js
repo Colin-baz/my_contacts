@@ -28,7 +28,32 @@ const registerValidation = (req, res, next) => {
 
 const loginValidation = registerValidation; 
 
+const contactValidation = (req, res, next) => {
+  const { firstName, lastName, phone } = req.body;
+
+  if (req.method === 'POST') {
+    if (!firstName || !lastName || !phone) {
+      return res.status(400).json({
+        success: false,
+        message: "Tous les champs sont requis (firstName, lastName, phone)",
+      });
+    }
+  }
+
+  if (phone !== undefined) {
+    if (phone.length < 10 || phone.length > 20) {
+      return res.status(400).json({
+        success: false,
+        message: "Le numéro de téléphone doit contenir entre 10 et 20 caractères",
+      });
+    }
+  }
+
+  next();
+};
+
 module.exports = {
   registerValidation,
   loginValidation,
+  contactValidation,
 };

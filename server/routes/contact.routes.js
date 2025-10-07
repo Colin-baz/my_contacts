@@ -2,6 +2,7 @@ const express = require("express");
 const router = express.Router();
 
 const verifyToken = require("../middlewares/auth.middleware");
+const { contactValidation } = require("../middlewares/validate.middleware");
 const { getContacts, createContactController, updateContactController, deleteContactController } = require("../controllers/contact.controller");
 
 /**
@@ -62,7 +63,7 @@ router.get("/contacts", verifyToken, getContacts);
  *       401:
  *         description: Unauthorized
  */
-router.post("/contacts", verifyToken, createContactController);
+router.post("/contacts", verifyToken, contactValidation, createContactController);
 
 /**
  * @swagger
@@ -102,7 +103,7 @@ router.post("/contacts", verifyToken, createContactController);
  *       404:
  *         description: Contact not found
  */
-router.put("/contacts/:id", verifyToken, updateContactController);
+router.put("/contacts/:id", verifyToken, contactValidation, updateContactController);
 
 /**
  * @swagger

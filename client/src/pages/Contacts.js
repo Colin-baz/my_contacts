@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 
@@ -17,7 +17,7 @@ const Contacts = () => {
   });
 
   const navigate = useNavigate();
-  const API_URL = "http://localhost:5000/api/contacts";
+ const API_URL = `${process.env.REACT_APP_API_URL}/api/contacts`;
 
   const getToken = () => {
     return localStorage.getItem("token");
@@ -30,7 +30,7 @@ const Contacts = () => {
     }
   }, [navigate]);
 
-  const fetchContacts = async () => {
+  const fetchContacts = useCallback(async () => {
     try {
       setLoading(true);
       setError("");
@@ -57,11 +57,11 @@ const Contacts = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [API_URL, navigate]);
 
   useEffect(() => {
     fetchContacts();
-  }, []);
+  }, [fetchContacts]);
 
   const handleChange = (e) => {
     setFormData({

@@ -23,9 +23,10 @@ const updateContactController = asyncHandler(async (req, res) => {
 });
 
 const deleteContactController = asyncHandler(async (req, res) => {
-  await deleteContact(req.params.id);
+  const userId = req.userData.id;
+  await deleteContact(req.params.id, userId);
 
-  return res.status(204).send();
+  return res.status(200).json({ message: "Contact deleted successfully" });
 });
 
 module.exports = { getContacts, createContactController, updateContactController, deleteContactController };
