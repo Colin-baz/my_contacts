@@ -20,28 +20,23 @@ const registerUser = async (email, password) => {
 };
 
 const loginUser = async (email, password) => {
-
   const user = await User.findOne({ email });
   if (!user) {
-    return res.status(401).json({ message: "Authentication failed" });
+    throw new Error("Utilisateur non trouvé");
   }
 
-  const isPasswordValid = await bcrypt.compare(password, user.password);
-  if (!isPasswordValid) {
-    return res.status(401).json({ message: "Authentication failed" });
+  const isMatch = await bcrypt.compare(password, user.password);
+  if (!isMatch) {
+    throw new Error("Mot de passe incorrect");
   }
 
-  const token = jwt.sign(
-    {
-      email: user.email,
-      userId: user._id,
-    },
-    process.env.JWT_SECRET,
-    { expiresIn: "1h" }
-  );
+  const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, {
+    expiresIn: "1h"
+  });
 
   return { token, user };
 };
+
 
 const getUsers = async () => {
   return await User.find().select("-password"); 
